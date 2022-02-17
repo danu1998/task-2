@@ -16,6 +16,12 @@ exports.getProducts = async (req, res) => {
         exclude: ["createdAt", "updatedAt", "idUser"],
       },
     });
+
+    products = JSON.parse(JSON.stringify(products));
+    products = products.map((item) => {
+      return { ...item, image: process.env.FILE_PATH + item.image };
+    });
+
     res.send({
       status: "Success !!!",
       message: "Get All Data Product Success !",
@@ -54,28 +60,46 @@ exports.getProduct = async (req, res) => {
 };
 exports.addProduct = async (req, res) => {
   try {
-    const data = req.body;
-    let newProduct = await product.create({
-      ...data,
+    const data = {
+      name: req.body.name,
+      price: req.body.price,
       image: req.file.filename,
-    });
-
-    newProduct = JSON.parse(JSON.stringify(newProduct));
-    newProduct = {
-      ...newProduct,
-      image: process.env.FILE_PATH + newProduct.image,
+      idUser: req.user.id,
     };
-    res.send({
-      status: "Success",
-      message: "Add Data Product Success",
-      data: {
-        newProduct,
+
+    let newProduct = await product.create(data);
+
+    let productData = await product.findOne({
+      where: {
+        id: newProduct.id,
+      },
+      include: [
+        {
+          model: user,
+          as: "user",
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "idUser"],
       },
     });
-  } catch (err) {
+    productData = JSON.parse(JSON.stringify(productData));
+
     res.send({
-      status: "Failed !!!",
-      message: "Add Data Product Failed",
+      status: "success...",
+      data: {
+        ...productData,
+        image: process.env.FILE_PATH + productData.image,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      status: "failed",
+      message: "Server Error",
     });
   }
 };
@@ -94,7 +118,7 @@ exports.deleteProduct = async (req, res) => {
   } catch (error) {
     res.send({
       status: "Failed !!!",
-      message: "Delete Product Faield",
+      message: "Delete Product Failed",
     });
   }
 };

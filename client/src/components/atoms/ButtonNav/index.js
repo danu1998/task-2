@@ -201,15 +201,17 @@ const ButtonNav = () => {
       password: "",
       fullName: "",
     });
-
     const { email, password, fullName } = form;
+    // ======= || ======= handlechange
     const handleChange = (e) => {
       setForm({
         ...form,
         [e.target.name]: e.target.value,
       });
     };
+    // ======= || =======
 
+    // ======= || ======= handlesubmit
     const handleSubmit = async (e) => {
       try {
         e.preventDefault();

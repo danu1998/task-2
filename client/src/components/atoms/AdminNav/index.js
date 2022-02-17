@@ -50,6 +50,18 @@ const AdminNav = () => {
               Add Toping
             </Link>
             <Link
+              to="/toping"
+              className="d-flex justify-content-center text-dark align-items-center gap-3 text-decoration-none my-4 fw-bold"
+            >
+              <img
+                src={topingAdmin}
+                alt="adm-toping"
+                width={24}
+                height={24}
+              ></img>
+              Toping List
+            </Link>
+            <Link
               to="/transaction"
               className="d-flex justify-content-center text-dark align-items-center gap-3 text-decoration-none my-4 fw-bold"
             >

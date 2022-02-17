@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       user.hasOne(models.profile, {
         as: "profile",
         foreignKey: {
-          name: "idUSer",
+          name: "idUser",
         },
       });
 

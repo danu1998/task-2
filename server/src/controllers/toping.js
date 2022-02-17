@@ -18,16 +18,15 @@ exports.getTopings = async (req, res) => {
     });
 
     topings = JSON.parse(JSON.stringify(topings));
-    topings = topings.map((data) => {
-      return {
-        ...data,
-        image: process.env.FILE_PATH + data.image,
-      };
+    topings = topings.map((item) => {
+      return { ...item, image: process.env.FILE_PATH + item.image };
     });
     res.send({
       status: "Success",
       message: "Get All Data Toping Success",
-      topings,
+      data: {
+        topings,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -61,23 +60,38 @@ exports.getToping = async (req, res) => {
 };
 exports.addToping = async (req, res) => {
   try {
-    const data = req.body;
-    let newToping = await toping.create({
-      ...data,
+    const data = {
+      name: req.body.name,
+      price: req.body.price,
       image: req.file.filename,
-    });
-
-    newToping = JSON.parse(JSON.stringify(newToping));
-    newToping = {
-      ...newToping,
-      image: process.env.FILE_PATH + newToping.image,
+      idUser: req.user.id,
     };
+    let newToping = await toping.create(data);
+    let topingData = await toping.findOne({
+      where: {
+        id: newToping.id,
+      },
+      include: [
+        {
+          model: user,
+          as: "user",
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "password"],
+          },
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "idUser"],
+      },
+    });
+    topingData = JSON.parse(JSON.stringify(topingData));
 
     res.send({
       status: "Success",
       message: "Add Data Toping Success",
       data: {
-        newToping,
+        ...topingData,
+        image: process.env.FILE_PATH + topingData.image,
       },
     });
   } catch (err) {

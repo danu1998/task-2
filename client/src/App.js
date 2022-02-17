@@ -20,6 +20,7 @@ import AddToping from "./pages/Admin/AddToping";
 import Transaction from "./pages/Admin/Transaction";
 import MainAdmin from "./pages/Admin/MainAdmin";
 import MainCustomer from "./pages/Customer/MainCustomer";
+import Toping from "./pages/Admin/Toping";
 // =============== || ===============
 import { API, setAuthToken } from "./config/api";
 // =============== || ===============
@@ -79,6 +80,7 @@ function App() {
       <Route exact path="/addproduct" element={<AddProduct />} />
       <Route exact path="/addtoping" element={<AddToping />} />
       <Route exact path="/transaction" element={<Transaction />} />
+      <Route exact path="/toping" element={<Toping />} />
     </Routes>
   );
 }
