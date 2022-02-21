@@ -1,4 +1,4 @@
-const { user } = require("../../models");
+const { user, profile } = require("../../models");
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -34,6 +34,10 @@ exports.register = async (req, res) => {
       email: req.body.email,
       password: hashedPassword,
       status: "customer",
+    });
+
+    await profile.create({
+      idUser: newUser.id,
     });
     // ================ || ===============
 

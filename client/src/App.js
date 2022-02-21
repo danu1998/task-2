@@ -23,6 +23,9 @@ import MainCustomer from "./pages/Customer/MainCustomer";
 import Toping from "./pages/Admin/Toping";
 // =============== || ===============
 import { API, setAuthToken } from "./config/api";
+import UpdateProduct from "./pages/Admin/UpdateProduct";
+import UpdateToping from "./pages/Admin/UpdateToping";
+import UpdateProfile from "./pages/Customer/UpdateProfile";
 // =============== || ===============
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -72,15 +75,18 @@ function App() {
   return (
     <Routes>
       <Route exact path="/" element={<Home />} />
-      <Route exact path="/detail" element={<Detail />} />
+      <Route exact path="/detail/:id" element={<Detail />} />
       <Route exact path="/profile" element={<Profile />} />
+      <Route exact path="/updateprofile/:id" element={<UpdateProfile />} />
       <Route exact path="/mainadmin" element={<MainAdmin />} />
       <Route exact path="/maincustomer" element={<MainCustomer />} />
       <Route exact path="/cart" element={<Cart />} />
       <Route exact path="/addproduct" element={<AddProduct />} />
+      <Route exact path="/updateproduct/:id" element={<UpdateProduct />} />
+      <Route exact path="/updatetoping/:id" element={<UpdateToping />} />
       <Route exact path="/addtoping" element={<AddToping />} />
       <Route exact path="/transaction" element={<Transaction />} />
-      <Route exact path="/toping" element={<Toping />} />
+      <Route exact path="/topingPage" element={<Toping />} />
     </Routes>
   );
 }

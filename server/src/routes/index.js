@@ -9,6 +9,11 @@ const {
   updateProduct,
 } = require("../controllers/product");
 const {
+  getProfiles,
+  updateProfile,
+  getProfile,
+} = require("../controllers/profile");
+const {
   getTopings,
   getToping,
   addToping,
@@ -20,6 +25,7 @@ const {
   addUser,
   deleteUser,
   getUser,
+  updateUser,
 } = require("../controllers/user");
 const { auth } = require("../middlewares/auth");
 const { uploadFile } = require("../middlewares/uploadFile");
@@ -30,6 +36,7 @@ router.get("/users", getUsers);
 router.get("/user/:id", getUser);
 router.post("/user", addUser);
 router.delete("/user/:id", deleteUser);
+router.patch("/user/:id", auth, uploadFile("image"), updateUser);
 
 //Route Product
 router.get("/products", getProducts);
@@ -49,6 +56,11 @@ router.patch("/toping/:id", auth, uploadFile("image"), updateToping);
 router.post("/register", register);
 router.post("/login", login);
 router.get("/check-auth", auth, checkAuth);
+
+//Route Profile
+router.get("/profiles", auth, getProfiles);
+router.get("/profile/:id", getProfile);
+router.patch("/profile/:id", auth, uploadFile("image"), updateProfile);
 
 //Route Order
 // router.get("/orders", getOrders);

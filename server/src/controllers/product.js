@@ -39,17 +39,32 @@ exports.getProducts = async (req, res) => {
 exports.getProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const products = await product.findOne({
+    let data = await product.findOne({
       where: {
         id,
       },
+      include: [
+        {
+          model: user,
+          as: "user",
+          attributes: ["createdAt", "updatedAt", "password"],
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "idUser"],
+      },
     });
+
+    data = JSON.parse(JSON.stringify(data));
+    data = {
+      ...data,
+      image: process.env.FILE_PATH + data.image,
+    };
+
     res.send({
       status: "Success !!!",
       message: "Get All Data By Id Success",
-      data: {
-        product: products,
-      },
+      data,
     });
   } catch (err) {
     res.send({
@@ -125,34 +140,29 @@ exports.deleteProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = req.body;
-    const image = req.file.filename;
+    const data = {
+      name: req?.body?.name,
+      price: req?.body?.price,
+      image: req?.file?.filename,
+      idUser: req?.user?.id,
+    };
 
     // ============== || ==============
 
-    let oldProducts = await product.findOne({
+    await product.update(data, {
       where: {
         id,
       },
     });
 
-    // ============== || ===============
-
-    let newProducts = await oldProducts.update({
-      ...data,
-      image,
-    });
-    newProducts = JSON.parse(JSON.stringify(newProducts));
-    newProducts = {
-      ...newProducts,
-      image: process.env.FILE_PATH + newProducts.image,
-    };
-
-    // ============== || ===============
     res.send({
       status: "Success !!!",
       message: "Update Data Product Success !",
-      data: newProducts,
+      data: {
+        id,
+        data,
+        image: req?.file?.filename,
+      },
     });
   } catch (err) {
     console.log(err);

@@ -1,10 +1,46 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import DeleteProduct from "../../../components/moleculs/Modal/DeleteProduct";
+import { API } from "../../../config/api";
 
-const TopingAdmin = ({ item }) => {
+const TopingAdmin = ({ item, topingFn }) => {
+  let navigate = useNavigate();
+  const [idDelete, setIdDelete] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(null);
+
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  const handleDelete = (id) => {
+    setIdDelete(id);
+    handleShow();
+  };
+
+  const deleteById = async (id) => {
+    try {
+      await API.delete(`/toping/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (confirmDelete) {
+      handleClose();
+      deleteById(idDelete);
+      setConfirmDelete(null);
+      topingFn();
+    }
+  }, [confirmDelete]);
+
+  const handleUpdate = (id) => {
+    navigate("/updatetoping/" + id);
+  };
+
   return (
     <div className="col-md-2 col-sm-12">
-      <Link to={`/detail/ + item.id`} className="text-decoration-none">
+      <div className="text-decoration-none">
         <div className="card">
           <img
             src={item.image}
@@ -14,9 +50,32 @@ const TopingAdmin = ({ item }) => {
           <div className="card-body alert-danger ">
             <h5 className="card-text text-danger">{item.name}</h5>
             <p className="card-text text-danger">{item.price}</p>
+            <div className="d-flex gap-2">
+              <button
+                onClick={() => {
+                  handleUpdate(item.id);
+                }}
+                className="btn btn-warning"
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => {
+                  handleDelete(item.id);
+                }}
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
-      </Link>
+      </div>
+      <DeleteProduct
+        setConfirmDelete={setConfirmDelete}
+        show={show}
+        handleClose={handleClose}
+      />
     </div>
   );
 };

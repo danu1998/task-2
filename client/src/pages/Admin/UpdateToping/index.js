@@ -1,20 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
-import Margin from "../../../components/atoms/Margin";
 import { CgAttachment } from "react-icons/cg";
-import { imgToping1 } from "../../../assets/images";
+import { useNavigate, useParams } from "react-router-dom";
+import Margin from "../../../components/atoms/Margin";
 import HeaderAdmin from "../../../components/moleculs/HeaderAdmin";
-import { useNavigate } from "react-router-dom";
 import { API } from "../../../config/api";
 
-const AddToping = () => {
+const UpdateToping = () => {
   let navigate = useNavigate();
+  const { id } = useParams();
   const [preview, setPreview] = useState(null);
+  const [toping, setToping] = useState({});
   const [form, setForm] = useState({
-    image: "",
     name: "",
     price: "",
+    image: "",
   });
+
+  const getToping = async (id) => {
+    try {
+      const response = await API.get("/toping/" + id);
+      setPreview(response.data.data.image);
+      setForm({
+        ...form,
+        name: response.data.data.name,
+        price: response.data.data.price,
+      });
+      setToping(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getToping(id);
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -26,6 +46,7 @@ const AddToping = () => {
       let url = URL.createObjectURL(e.target.files[0]);
       setPreview(url);
     }
+    console.log(handleChange);
   };
 
   const handleSubmit = async (e) => {
@@ -38,19 +59,24 @@ const AddToping = () => {
       };
 
       const formData = new FormData();
+      if (form.image) {
+        formData.set("image", form?.image[0], form?.image[0]?.name);
+      }
       formData.set("name", form.name);
       formData.set("price", form.price);
-      formData.set("image", form.image[0], form.image[0].name);
-      console.log(form);
 
-      const response = await API.post("/toping", formData, config);
-      console.log(response);
+      const response = await API.patch(
+        "/toping/" + toping.id,
+        formData,
+        config
+      );
+      console.log(response.data);
       navigate("/topingPage");
     } catch (error) {
       console.log(error);
     }
+    console.log(handleSubmit);
   };
-
   return (
     <div>
       <HeaderAdmin />
@@ -65,8 +91,9 @@ const AddToping = () => {
                   <input
                     type="text"
                     className="form-control border-danger border-3"
-                    name="name"
                     onChange={handleChange}
+                    value={form.name}
+                    name="name"
                     placeholder="Name Toping"
                   />
                 </div>
@@ -74,20 +101,21 @@ const AddToping = () => {
                   <input
                     type="number"
                     className="form-control border-danger border-3"
-                    name="price"
                     onChange={handleChange}
+                    name="price"
+                    value={form.price}
                     placeholder="Price"
                   />
                 </div>
 
                 <div className="card p-2 border-danger border-3">
-                  <label htmlFor="file-input" className="text-center">
+                  <label className="text-center" for="file-input">
                     <input
                       style={{ display: "none" }}
                       id="file-input"
                       type="file"
-                      name="image"
                       onChange={handleChange}
+                      name="image"
                     />
                     <div className="d-flex justify-content-between align-items-center">
                       <h6 className=" mt-1 text-danger">Photo Toping</h6>
@@ -98,7 +126,7 @@ const AddToping = () => {
 
                 <div className="d-grid gap-2 mt-5">
                   <button type="submit" className="btn btn-danger">
-                    Add Toping
+                    Update Toping
                   </button>
                 </div>
               </form>
@@ -107,12 +135,7 @@ const AddToping = () => {
           <div className="col-md-4">
             {preview && (
               <div>
-                <img
-                  src={preview}
-                  alt="img-product"
-                  width={400}
-                  height={500}
-                ></img>
+                <img src={preview} alt="img-product" width={400} height={500} />
               </div>
             )}
           </div>
@@ -122,4 +145,4 @@ const AddToping = () => {
   );
 };
 
-export default AddToping;
+export default UpdateToping;

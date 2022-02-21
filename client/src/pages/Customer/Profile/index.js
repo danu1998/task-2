@@ -1,12 +1,34 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import HeaderCustomer from "../../../components/moleculs/HeaderCustomer";
 import Margin from "../../../components/atoms/Margin";
 // import { DataProfile } from "./DataProfile";
 import { imgBarcode, logoImg } from "../../../assets/images";
+import { UserContext } from "../../../context/userContext";
 // import { DataCart } from "../Cart/DataCart";
-
+import { API } from "../../../config/api";
+import UpdateProfile from "../../../components/moleculs/Modal/UpdateProfile";
+import { useNavigate } from "react-router-dom";
 const Profile = () => {
+  let navigate = useNavigate();
+  const [state] = useContext(UserContext);
+  const [profile, setProfile] = useState({});
+
+  const handleUpdate = (id) => {
+    navigate("/updateprofile/" + profile.id);
+  };
+
+  const getProfile = async () => {
+    try {
+      const response = await API.get("/profiles");
+      setProfile(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getProfile();
+  }, []);
   return (
     <div>
       <HeaderCustomer />
@@ -16,18 +38,51 @@ const Profile = () => {
         <div className="row">
           <div className="col-md-6">
             <h2 className="fw-bold text-danger">My Profile</h2>
-            return (
             <div className="row mt-5">
               <div className="col-md-4">
-                <img src="" alt="img-profile"></img>
+                <div>
+                  <img src="" alt="img-profile"></img>
+                </div>
+                <div className="d-grid mt-3">
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => {
+                      handleUpdate(state.user.id);
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                </div>
               </div>
               <div className="col-md-8">
-                <h4 style={{ color: "#613D2B" }}>Full Name</h4>
-                <p>my name</p>
-                <h4 className="mt-3" style={{ color: "#613D2B" }}>
-                  Email
-                </h4>
-                <p>my email</p>
+                <div>
+                  <h4 style={{ color: "#613D2B" }}>Full Name</h4>
+                  <p>{state.user.fullName}</p>
+                </div>
+                <div>
+                  <h4 className="mt-3" style={{ color: "#613D2B" }}>
+                    Email
+                  </h4>
+                  <p>{state.user.email}</p>
+                </div>
+                <div>
+                  <h4 className="mt-3" style={{ color: "#613D2B" }}>
+                    Phone
+                  </h4>
+                  <p>{profile.phone}</p>
+                </div>
+                <div>
+                  <h4 className="mt-3" style={{ color: "#613D2B" }}>
+                    Gender
+                  </h4>
+                  <p>{profile.gender}</p>
+                </div>
+                <div>
+                  <h4 className="mt-3" style={{ color: "#613D2B" }}>
+                    Address
+                  </h4>
+                  <p>{profile.address}</p>
+                </div>
               </div>
             </div>
             );
@@ -39,12 +94,11 @@ const Profile = () => {
             <div className="alert-danger p-4 rounded mt-5">
               <div className="row">
                 <div className="col-md-8">
-                  return (
                   <div className="row justify-content-start align-items-center">
                     <div className="col-md-4 mt-3">
                       <div>
                         <img
-                          src=""
+                          src={profile?.image}
                           alt="img-product"
                           className="img-fluid"
                         ></img>
@@ -60,7 +114,6 @@ const Profile = () => {
                           Saturday
                         </p>
                         <p className="text-danger" style={{ fontSize: "12px" }}>
-                          {" "}
                           ,5 March 2020
                         </p>
                       </div>

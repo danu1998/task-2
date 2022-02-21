@@ -15,9 +15,14 @@ const Toping = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     getTopings();
+    return () => {
+      setTopings([]);
+    };
   }, []);
+
   return (
     <div>
       <HeaderAdmin />
@@ -27,7 +32,7 @@ const Toping = () => {
         <Margin />
         <div className="row">
           {toping?.map((item, index) => (
-            <TopingAdmin item={item} key={index} />
+            <TopingAdmin item={item} key={index} topingFn={getTopings} />
           ))}
         </div>
       </Container>

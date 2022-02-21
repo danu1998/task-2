@@ -39,17 +39,31 @@ exports.getTopings = async (req, res) => {
 exports.getToping = async (req, res) => {
   try {
     const { id } = req.params;
-    const topings = await toping.findOne({
+    let data = await toping.findOne({
       where: {
         id,
       },
+      include: [
+        {
+          model: user,
+          as: "user",
+          attributes: ["createdAt", "updatedAt", "password"],
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "idUser"],
+      },
     });
+
+    data = JSON.parse(JSON.stringify(data));
+    data = {
+      ...data,
+      image: process.env.FILE_PATH + data.image,
+    };
     res.send({
       status: "Success",
       message: "Get All Data Toping By Id Success",
-      data: {
-        toping: topings,
-      },
+      data,
     });
   } catch (err) {
     res.send({
@@ -123,32 +137,31 @@ exports.deleteToping = async (req, res) => {
 exports.updateToping = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = req.body;
-    const image = req.file.filename;
+
     // =============== || ==============
-    let oldToping = await toping.findOne({
+    const data = {
+      name: req?.body?.name,
+      price: req?.body?.price,
+      image: req?.file?.filename,
+      idUser: req?.user?.id,
+    };
+    // =============== || ==============
+
+    await toping.update(data, {
       where: {
         id,
       },
     });
-    // =============== || ==============
-
-    let newToping = await oldToping.update({
-      ...data,
-      image,
-    });
-
-    newToping = JSON.parse(JSON.stringify(newToping));
-    newToping = {
-      ...newToping,
-      image: process.env.FILE_PATH + newToping.image,
-    };
 
     // =============== || ==============
     res.send({
       status: "Success !!!",
       message: "Update Data Toping Success !",
-      data: newToping,
+      data: {
+        id,
+        data,
+        image: req?.file?.filename,
+      },
     });
   } catch (err) {
     res.send({

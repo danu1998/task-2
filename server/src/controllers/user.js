@@ -1,9 +1,20 @@
-const { user } = require("../../models");
+const { user, profile } = require("../../models");
 
 // Get All User Data
 exports.getUsers = async (req, res) => {
   try {
-    const users = await user.findAll();
+    const users = await user.findAll({
+      include: {
+        model: profile,
+        as: "profile",
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "idUser"],
+        },
+      },
+      attributes: {
+        exclude: ["password", "createdAt", "updatedAt"],
+      },
+    });
     res.send({
       status: "Success !!!",
       message: "Get Data Users Success !",
@@ -12,6 +23,7 @@ exports.getUsers = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log(err);
     res.send({
       status: "Error !!!",
       message: "Get Data Users Error !",
@@ -27,6 +39,16 @@ exports.getUser = async (req, res) => {
       where: {
         id,
       },
+      include: {
+        model: profile,
+        as: "profile",
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "idUser"],
+        },
+      },
+      attributes: {
+        exclude: ["password", "createdAt", "updatedAt"],
+      },
     });
     res.send({
       status: "Success !!!",
@@ -36,6 +58,7 @@ exports.getUser = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log(err);
     res.send({
       status: "Error !!!",
       message: "Get Data By Id Users Error !",
@@ -46,16 +69,13 @@ exports.getUser = async (req, res) => {
 // Add User Data
 exports.addUser = async (req, res) => {
   try {
-    const data = req.body;
-    const users = await user.create(data);
+    await user.create(req.body);
     res.send({
       status: "Success !!!",
       message: "Add Data Users Success !",
-      data: {
-        users,
-      },
     });
   } catch (err) {
+    console.log(err);
     res.send({
       status: "Error !!!",
       message: "Add Data Users Error !",
@@ -80,6 +100,30 @@ exports.deleteUser = async (req, res) => {
     res.send({
       status: "Error !!!",
       message: "Delete Data Users Error !",
+    });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await user.update(req.body, {
+      where: {
+        id,
+      },
+    });
+
+    res.send({
+      status: "success",
+      message: `Update user id: ${id} finished`,
+      data: req.body,
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({
+      status: "failed",
+      message: "Server Error",
     });
   }
 };

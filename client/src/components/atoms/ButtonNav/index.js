@@ -23,6 +23,10 @@ const ButtonNav = () => {
     handleShowLogin();
   };
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   const LoginModal = () => {
     let navigate = useNavigate();
     const [state, dispatch] = useContext(UserContext);
@@ -70,6 +74,7 @@ const ButtonNav = () => {
             </Alert>
           );
           setMessage(alert);
+          refreshPage();
         }
       } catch (error) {
         const alert = (
